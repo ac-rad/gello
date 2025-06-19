@@ -84,11 +84,12 @@ class ZMQServerThread(threading.Thread):
 class ZMQRobotServer:
     """A class representing a ZMQ server for a robot."""
 
-    def __init__(self, robot: Robot, host: str = "127.0.0.1", port: int = 5556):
+    def __init__(self, robot: Robot, host: str = "192.168.1.1", port: int = 5556):
         self._robot = robot
         self._context = zmq.Context()
         self._socket = self._context.socket(zmq.REP)
         addr = f"tcp://{host}:{port}"
+        print("robot address:", addr)
         self._socket.bind(addr)
         self._stop_event = threading.Event()
 
@@ -135,7 +136,7 @@ class MujocoRobotServer:
         self,
         xml_path: str,
         gripper_xml_path: Optional[str] = None,
-        host: str = "127.0.0.1",
+        host: str = "192.168.1.1",
         port: int = 5556,
         print_joints: bool = False,
     ):

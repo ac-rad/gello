@@ -30,7 +30,7 @@ class Args:
     robot_port: int = 6001
     wrist_camera_port: int = 5000
     base_camera_port: int = 5001
-    hostname: str = "127.0.0.1"
+    hostname: str = "142.1.161.130" #before: 128.100.35.84
     robot_type: str = None  # only needed for quest agent or spacemouse agent
     hz: int = 100
     start_joints: Optional[Tuple[float, ...]] = None
@@ -45,7 +45,7 @@ class Args:
 
 def main(args):
     if args.mock:
-        robot_client = PrintRobot(8, dont_print=True)
+        robot_client = PrintRobot(7, dont_print=True)
         camera_clients = {}
     else:
         camera_clients = {
@@ -59,8 +59,8 @@ def main(args):
     if args.bimanual:
         if args.agent == "gello":
             # dynamixel control box port map (to distinguish left and right gello)
-            right = "/dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_FT7WBG6A-if00-port0"
-            left = "/dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_FT7WBEIA-if00-port0"
+            right = "/dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_FTA7NNQU-if00-port0"
+            left = "/dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_FTA7NN89-if00-port0"
             left_agent = GelloAgent(port=left)
             right_agent = GelloAgent(port=right)
             agent = BimanualAgent(left_agent, right_agent)
@@ -93,8 +93,8 @@ def main(args):
 
         # System setup specific. This reset configuration works well on our setup. If you are mounting the robot
         # differently, you need a separate reset joint configuration.
-        reset_joints_left = np.deg2rad([0, -90, -90, -90, 90, 0, 0])
-        reset_joints_right = np.deg2rad([0, -90, 90, -90, -90, 0, 0])
+        reset_joints_left = np.deg2rad([90, -90, 90, 90, 90, -180, 0])
+        reset_joints_right = np.deg2rad([90, -90, 90, 90, 90, -180, 0])
         reset_joints = np.concatenate([reset_joints_left, reset_joints_right])
         curr_joints = env.get_obs()["joint_positions"]
         max_delta = (np.abs(curr_joints - reset_joints)).max()
@@ -117,12 +117,16 @@ def main(args):
                     )
             if args.start_joints is None:
                 reset_joints = np.deg2rad(
-                    [0, -90, 90, -90, -90, 0, 0]
+                    [90, -90, 90, 90, 90, -180, 0]
                 )  # Change this to your own reset joints
             else:
                 reset_joints = args.start_joints
+            #print("01")
             agent = GelloAgent(port=gello_port, start_joints=args.start_joints)
+            #print("02")
             curr_joints = env.get_obs()["joint_positions"]
+            #print("03")
+
             if reset_joints.shape == curr_joints.shape:
                 max_delta = (np.abs(curr_joints - reset_joints)).max()
                 steps = min(int(max_delta / 0.01), 100)
@@ -149,6 +153,7 @@ def main(args):
     print("Going to start position")
     start_pos = agent.act(env.get_obs())
     obs = env.get_obs()
+    print("obs", obs)
     joints = obs["joint_positions"]
 
     abs_deltas = np.abs(start_pos - joints)

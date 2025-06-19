@@ -68,8 +68,9 @@ class RobotEnv:
             image, depth = camera.read()
             observations[f"{name}_rgb"] = image
             observations[f"{name}_depth"] = depth
-
+        #print("robot-env-01")
         robot_obs = self._robot.get_observations()
+        #print("robot-env-02")
         assert "joint_positions" in robot_obs
         assert "joint_velocities" in robot_obs
         assert "ee_pos_quat" in robot_obs
