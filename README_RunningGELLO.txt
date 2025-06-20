@@ -64,7 +64,7 @@ xhost +
 4. Run
 
 cd ~
-python /gello/gello/data_utils/plot_utils.py  
+python /gello/gello/data_utils/demo_to_gdict.py  
 
 This should save plots of your saved trajectories in gello_software/gello_software/processed_data :
 Action Values corresponds to joint angle in radians. 
